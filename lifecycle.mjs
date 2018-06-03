@@ -104,7 +104,6 @@ export class KPULifecycle {
             debugger
             return null
         }
-        debugger
         let opc = this.cpu.registers[Register.PC]
         // this.cpu.setRegister(Register.PC, this.cpu.registers[Register.PC] + instruction.length)
         instruction.execute(this.cpu)

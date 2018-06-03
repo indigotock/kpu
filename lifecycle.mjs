@@ -12,7 +12,10 @@ import {
     Instruction,
     getOpcode
 } from "./instruction.mjs";
-import noww from "performance-now"
+
+function noww(){
+    return Date.now()
+}
 
 export class KPULifecycle {
     constructor(hertz = 1000) {

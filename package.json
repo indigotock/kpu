@@ -16,8 +16,5 @@
   "bugs": {
     "url": "https://github.com/indigotock/kpu/issues"
   },
-  "homepage": "https://github.com/indigotock/kpu#readme",
-  "dependencies": {
-    "performance-now": "^2.1.0"
-  }
+  "homepage": "https://github.com/indigotock/kpu#readme"
 }

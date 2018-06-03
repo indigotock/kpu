@@ -1,7 +1,7 @@
 import {
     Instruction,
     getOpcode
-} from "./instruction.js";
+} from "./instruction.mjs";
 export var Register;
 (function (Register) {
     Register[Register["PC"] = 0] = "PC";
@@ -21,25 +21,28 @@ export class KPU {
         this.maxWord = parseInt(new Array(16).fill('1').join(''), 2)
         this.memoryCallbacks = []
         this.registerCallbacks = []
+        this.startTimestamp = null
+        this.hertz = 500
     }
     setRegister(reg, newvalue) {
-        Vue.set(this.registers, reg, newvalue & this.maxWord)
+        this.registers[reg] = newvalue
     }
     setMemory(index, newvalue) {
-        Vue.set(this.memory, index, newvalue & this.maxWord)
+        this.memory[index] = newvalue
     }
     runUntilNOP(verbosely) {
-        while (true) {
-            var pc = this.registers[Register.PC];
-            var instruction = Instruction.build(this, pc);
-            if (!instruction || instruction.op == getOpcode('NOP'))
-                break;
-            this.registers[Register.PC] += instruction.length;
-            instruction.execute(this);
-            if (verbosely) {
-                this.printOut();
-            }
-        }
+        this.startTimestamp = performance.now()
+        // while (true) {
+        //     var pc = this.registers[Register.PC];
+        //     var instruction = Instruction.build(this, pc);
+        //     if (!instruction || instruction.op == getOpcode('NOP'))
+        //         break;
+        //     this.registers[Register.PC] += instruction.length;
+        //     instruction.execute(this);
+        //     if (verbosely) {
+        //         this.printOut();
+        //     }
+        // }
     }
     getRegister(name) {
         return Register[name];
@@ -53,7 +56,7 @@ export class KPU {
         return Math.pow(2, this.wordSize) - 1;
     }
     printOut() {
-        console.log(this.memory);
+        console.log(this.memory.join());
         console.log(this.registers.map((e, i) => Register[i] + ": " + e));
     }
     updateRegisterCallbacks(reg, newvalue, oldvalue) {

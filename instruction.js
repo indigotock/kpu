@@ -1,6 +1,6 @@
 import {
     Register
-} from "./kpu.js";
+} from "./kpu.mjs";
 
 //todo refactor old enums
 export var OperandValueType;

@@ -1,0 +1,23 @@
+{
+  "name": "kpu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug": "node --nolazy --experimental-modules --inspect-brk=9229 index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/indigotock/kpu.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/indigotock/kpu/issues"
+  },
+  "homepage": "https://github.com/indigotock/kpu#readme",
+  "dependencies": {
+    "performance-now": "^2.1.0"
+  }
+}

@@ -4,10 +4,10 @@ import {
     LiteralOperand,
     RegisterOperand,
     IndirectOperand
-} from "./instruction.js";
+} from "./instruction.mjs";
 import {
     DataValue
-} from "./dataValue.js";
+} from "./dataValue.mjs";
 var regexps = {
     whitespace: /^\s+\b/,
     newline: /^\r?\n/,
@@ -157,7 +157,6 @@ export class Parser {
             context.position += Math.max(1, this.offset);
             this.offset = 0;
         }
-        console.log(context)
         return context;
     }
 }

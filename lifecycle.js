@@ -1,28 +1,42 @@
 import {
     KPU,
     Register
-} from "./kpu.js"
+} from "./kpu.mjs"
 import {
     Parser
-} from './parser.js';
+} from './parser.mjs';
 import {
     Tokenise
-} from "./lexer.js";
+} from "./lexer.mjs";
 import {
     Instruction,
     getOpcode
-} from "./instruction.js";
+} from "./instruction.mjs";
+import noww from "performance-now"
 
 export class KPULifecycle {
-    constructor(vueApp) {
+    constructor() {
         this.cpu = new KPU(0xff + 1)
-        this.vueApp = vueApp
         this.isRunning = false
-        this.frequency = 1000
+        this.hertz = 1000
         this.reset()
 
     }
-
+    get secondsPerTick() {
+        return 1 / this.hertz
+    }
+    get ticksPerSecond() {
+        return (this.hertz)
+    }
+    get timesToTick() {
+        let now = noww()
+        if (!this.startTimestamp) {
+            return 0
+        }
+        let secondsPassed = (now - (this.startTimestamp))/1000
+        let res = (secondsPassed) * this.ticksPerSecond
+        return res
+    }
     reset() {
         this.isRunning = false
         this.cpu.reset()
@@ -30,6 +44,11 @@ export class KPULifecycle {
 
     stop() {
         this.isRunning = false
+        for (let i = 0; i < this.timesToTick; i++) {
+            let res = this.step()
+            if (!res) break;
+        }
+        this.startTimestamp = noww()
     }
 
     load(code) {
@@ -39,34 +58,38 @@ export class KPULifecycle {
         let res = parser.parse(tokens)
         let position = 0
         res.result.forEach(lexeme => {
-            lexeme.write(this.cpu, position, function (a, i, v) {
-                Vue.set(a, i, v)
-            });
+            lexeme.write(this.cpu, position);
             position += lexeme.length;
         });
     }
 
     runUntilNop() {
-        const HERTZ = this.frequency
         this.isRunning = true
-        let executed;
-        let interval;
+        this.startTimestamp = noww()
+        // let executed;
+        // let interval;
 
-        function tick() {
-            if (this.isRunning == false) {
-                clearInterval(interval)
-                return
-            }
-            executed = this.step()
-            if (executed = null) {
-                this.clearRunning()
-            }
-        }
+        // function tick() {
+        //     if (this.isRunning == false) {
+        //         clearInterval(interval)
+        //         return
+        //     }
+        //     executed = this.step()
+        //     if (executed = null) {
+        //         this.clearRunning()
+        //     }
+        // }
 
 
-        interval = setInterval(tick.bind(this), 1 / (HERTZ / 1000))
+        // interval = setInterval(tick.bind(this), 1 / (HERTZ / 1000))
     }
 
+    get snapshot() {
+        return {
+            memory: this.cpu.memory,
+            registers: this.cpu.registers
+        }
+    }
     clearRunning() {
         this.isRunning = false
     }
@@ -75,9 +98,10 @@ export class KPULifecycle {
         var pc = this.cpu.registers[Register.PC]
         var instruction = Instruction.build(this.cpu, pc)
         if (!instruction || instruction.op == getOpcode('NOP')) {
+            debugger
             return null
         }
-        console.log(instruction)
+        debugger
         let opc = this.cpu.registers[Register.PC]
         // this.cpu.setRegister(Register.PC, this.cpu.registers[Register.PC] + instruction.length)
         instruction.execute(this.cpu)

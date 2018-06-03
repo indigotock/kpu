@@ -183,6 +183,5 @@ export function Tokenise(code) {
             results.push(parseResult);
         } else {}
     }
-    console.log(results)
     return results;
 }

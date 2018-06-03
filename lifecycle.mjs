@@ -15,10 +15,10 @@ import {
 import noww from "performance-now"
 
 export class KPULifecycle {
-    constructor() {
+    constructor(hertz = 1000) {
         this.cpu = new KPU(0xff + 1)
         this.isRunning = false
-        this.hertz = 1000
+        this.hertz = hertz
         this.reset()
 
     }

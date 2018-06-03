@@ -101,7 +101,6 @@ export class KPULifecycle {
         var pc = this.cpu.registers[Register.PC]
         var instruction = Instruction.build(this.cpu, pc)
         if (!instruction || instruction.op == getOpcode('NOP')) {
-            debugger
             return null
         }
         let opc = this.cpu.registers[Register.PC]

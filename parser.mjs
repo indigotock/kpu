@@ -128,7 +128,6 @@ export class Parser {
     parseAsError(context) {
         var token = context.tokens[context.position + this.offset];
         this.offset += 1;
-        debugger
         throw ({
             token: token,
             name: "Unknown token",

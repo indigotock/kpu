@@ -13,30 +13,27 @@ import {
     getOpcode
 } from "./instruction.mjs";
 
-function noww(){
+function noww() {
     return Date.now()
 }
 
 export class KPULifecycle {
-    constructor(hertz = 1000) {
+    constructor(ticksPerSecond = 1000) {
         this.cpu = new KPU(0xff + 1)
         this.isRunning = false
-        this.hertz = hertz
+        this.ticksPerSecond = ticksPerSecond
         this.reset()
-
+        this.updateSnapshot();
     }
     get secondsPerTick() {
-        return 1 / this.hertz
-    }
-    get ticksPerSecond() {
-        return (this.hertz)
+        return 1 / this.ticksPerSecond
     }
     get timesToTick() {
         let now = noww()
         if (!this.startTimestamp) {
             return 0
         }
-        let secondsPassed = (now - (this.startTimestamp))/1000
+        let secondsPassed = (now - (this.startTimestamp)) / 1000
         let res = (secondsPassed) * this.ticksPerSecond
         return res
     }
@@ -47,10 +44,7 @@ export class KPULifecycle {
 
     stop() {
         this.isRunning = false
-        for (let i = 0; i < this.timesToTick; i++) {
-            let res = this.step()
-            if (!res) break;
-        }
+        this.catchUp()
         this.startTimestamp = noww()
     }
 
@@ -69,28 +63,29 @@ export class KPULifecycle {
     runUntilNop() {
         this.isRunning = true
         this.startTimestamp = noww()
-        // let executed;
-        // let interval;
-
-        // function tick() {
-        //     if (this.isRunning == false) {
-        //         clearInterval(interval)
-        //         return
-        //     }
-        //     executed = this.step()
-        //     if (executed = null) {
-        //         this.clearRunning()
-        //     }
-        // }
-
-
-        // interval = setInterval(tick.bind(this), 1 / (HERTZ / 1000))
     }
 
-    get snapshot() {
+    getSnapshot() {
+        if (this.isRunning) {
+            this.startTimestamp = noww()
+            Vue.nextTick(() => {
+                this.updateSnapshot()
+            });
+            this.startTimestamp = noww()
+        }
         return {
-            memory: this.cpu.memory,
-            registers: this.cpu.registers
+            memory: this.cpu.memory.slice(),
+            registers: this.cpu.registers.slice()
+        }
+    }
+    updateSnapshot() {
+        this.catchUp()
+    }
+    catchUp() {
+        let ttt = this.timesToTick
+        for (let i = 0; i < ttt; i++) {
+            let res = this.step()
+            if (!res) break;
         }
     }
     clearRunning() {
@@ -106,6 +101,7 @@ export class KPULifecycle {
         let opc = this.cpu.registers[Register.PC]
         // this.cpu.setRegister(Register.PC, this.cpu.registers[Register.PC] + instruction.length)
         instruction.execute(this.cpu)
+        this.startTimestamp = noww()
         return instruction
     }
 }

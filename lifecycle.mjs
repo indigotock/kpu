@@ -45,7 +45,6 @@ export class KPULifecycle {
     stop() {
         this.isRunning = false
         this.catchUp()
-        this.startTimestamp = noww()
     }
 
     load(code) {

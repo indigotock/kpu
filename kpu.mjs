@@ -22,13 +22,13 @@ export class KPU {
         this.memoryCallbacks = []
         this.registerCallbacks = []
         this.startTimestamp = null
-        this.hertz = 500
+        this.hertz = 1
     }
     setRegister(reg, newvalue) {
-        this.registers[reg] = newvalue
+        this.registers[reg] = newvalue % this.maxWord
     }
     setMemory(index, newvalue) {
-        this.memory[index] = newvalue
+        this.memory[index] = newvalue% this.maxWord
     }
     runUntilNOP(verbosely) {
         this.startTimestamp = performance.now()
